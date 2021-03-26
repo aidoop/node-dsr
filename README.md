@@ -13,3 +13,10 @@ cmake ..
 cmake --build . --config Release
 sudo make install
 ```
+### NPM
+```json
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "^3.1.0"
+  }
+```
