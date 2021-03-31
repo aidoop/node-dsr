@@ -1,10 +1,12 @@
 {
   "name": "node-dsr",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Doosan robot client module for nodejs",
-  "main": "index.js",
+  "main": "addon.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild",
+    "run": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -16,9 +18,13 @@
   "bugs": {
     "url": "https://github.com/aidoop/node-dsr/issues"
   },
+  "engines": {
+    "node": ">= 14.0.0"
+  },
   "homepage": "https://github.com/aidoop/node-dsr#readme",
   "dependencies": {
-    "bindings": "^1.5.0",
+    "bindings": "~1.2.1",
     "node-addon-api": "^3.1.0"
-  }
+  },
+  "gypfile": true
 }

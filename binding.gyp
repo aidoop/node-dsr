@@ -3,7 +3,7 @@
         {
             "default_configuration": "Debug",
             "target_name": "node-dsr",
-            "sources": ["src/addon.cpp"],
+            "sources": ["src/addon.cpp", "src/NodeDsr.cpp"],
             "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS"],
             "include_dirs": [
                 "<!@(node -p \"require('node-addon-api').include\")",

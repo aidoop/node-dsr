@@ -1,20 +1,31 @@
-const dsr = require("bindings")("node-dsr")
+'use strict'
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms))
+const dsrlib = require("bindings")("node-dsr")
+console.log(dsrlib)
+
+function abc(aa) {
+  console.log('callback funciton called - ', aa)
 }
 
-var jointPos = [-27.39, -6.95, 143.81, 0.02, 43.17, 0.01]
-dsr.movej(jointPos)
+//var nodeDsr = new dsrlib.NodeDsr()
+// nodeDsr.setOnMonitoringState(abc)
+// nodeDsr.test()
 
-// var initRet = dsr.initialize()
-// var libVersion = dsr.getLibraryVersion()
-// var openRet = dsr.openConnection("192.168.137.50", 12345)
-// sleep(2000)
-// var jointPos = [-27.39, -6.95, 143.81, 0.02, 43.17, 0.01]
-// var closeRet = dsr.closeConnection()
 
-// console.log(initRet)
-// console.log(libVersion)
-// console.log(openRet)
-// console.log(closeRet)
+
+// console.log('openConnection: ', nodeDsr.openConnection("192.168.137.100", 12345))
+// console.log('getLibraryVersion: ', nodeDsr.getLibraryVersion())
+
+// // movej
+// var pos = [111.111, 222.222, 333.333, -444.444, -555.555, -666.666]
+// console.log('movej: ', nodeDsr.movej(pos, 77.77, 88.88, 99.99, true, 101.11, true))
+
+// // movel
+// var pos = [11.11, -22.22, 33.33, 3.14, 0, -3.14]
+// var vel = [30.0, 30.0]
+// var acc = [5.0, 6.0]
+// console.log('movel: ', nodeDsr.movel(pos, vel, acc, -23.3, true, 0, 5.5, false))
+
+// console.log('closeConnection: ', nodeDsr.closeConnection())
+
+
