@@ -22,7 +22,6 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports)
                       InstanceMethod("movej", &NodeDsr::MoveJ),
                       InstanceMethod("moveja", &NodeDsr::MoveJA),
                       InstanceMethod("movel", &NodeDsr::MoveL),
-
                   });
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -34,7 +33,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports)
 }
 
 NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345)
+    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_TpInitailizingComplted(false), m_bHasControlAuthority(false)
 {
   Napi::Env env = info.Env();
 
@@ -68,6 +67,10 @@ NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
     return;
   }
   DBGPRINT("NodeDsr Index : %d\n", m_nIndex);
+
+  m_pDrfl->set_on_monitoring_state(g_pfnMonitoringState[m_nIndex]);
+  m_pDrfl->set_on_monitoring_access_control(g_pfnMonitroingAccessControl[m_nIndex]);
+  m_pDrfl->set_on_tp_initializing_completed(g_pfnTpInitializingCompleted[m_nIndex]);
 }
 
 Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info)
@@ -81,6 +84,22 @@ Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info)
   bool bConnected = m_pDrfl->open_connection(m_strUrl, m_nPort);
   DBGPRINT("Result: %d\n", bConnected);
 
+  SYSTEM_VERSION tSysVerion;
+
+  // TODO: must check this gpio output
+  m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
+
+  cout << "System version: " << tSysVerion._szController << endl;
+  cout << "Library version: " << m_pDrfl->GetLibraryVersion() << endl;
+
+  while ((m_pDrfl->get_robot_state() != STATE_STANDBY) || !m_bHasControlAuthority)
+  {
+    usleep(1000);
+  }
+
+  m_pDrfl->set_robot_mode(ROBOT_MODE_MANUAL);
+  m_pDrfl->set_robot_system(ROBOT_SYSTEM_REAL);
+
   return Napi::Boolean::New(env, bConnected);
 }
 
@@ -92,7 +111,7 @@ Napi::Value NodeDsr::CloseConnection(const Napi::CallbackInfo &info)
 
   m_pDrfl->close_connection();
 
-  m_cbOnMoitoringStateTsfn.Release();
+  // m_cbOnMoitoringStateTsfn.Release();
 
   return Napi::Boolean::New(env, true);
 }

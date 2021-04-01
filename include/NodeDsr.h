@@ -29,12 +29,16 @@ public:
 
 public:
     uint32_t GetIndex();
+    CDRFLEx *GetCDRFLex() { return m_pDrfl; }
 
 public:
     Napi::FunctionReference m_cbOnMoitoringState;
     Napi::ThreadSafeFunction m_cbOnMoitoringStateTsfn;
-
     Napi::FunctionReference m_cbOnMonitoringAccessControl;
+
+public:
+    bool m_TpInitailizingComplted;
+    bool m_bHasControlAuthority;
 
 private:
     CDRFLEx *m_pDrfl;
