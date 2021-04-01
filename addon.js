@@ -1,17 +1,39 @@
 'use strict'
 
+function sleep(ms) {
+    return new Promise((r) => setTimeout(r, ms))
+  }
+
+async function aaaa() {
+  await sleep(1000)
+}
+
 const dsrlib = require("bindings")("node-dsr")
 console.log(dsrlib)
 
-function abc(aa) {
-  console.log('callback funciton called - ', aa)
+function onMonitoringState(state) {
+  console.log('onMonitoringState funciton called - ', state)
+  if(state === 3)
+  {
+    
+  }
 }
 
-//var nodeDsr = new dsrlib.NodeDsr()
-// nodeDsr.setOnMonitoringState(abc)
-// nodeDsr.test()
+function onMonitoringAccessControl(state) {
+    console.log('onMonitoringAccessControl funciton called - ', state)
+  }
 
 
+
+var nodeDsr = new dsrlib.NodeDsr("192.168.137.100")
+nodeDsr.setOnMonitoringState(onMonitoringState)
+// nodeDsr.setOnMonitoringAccessControl(onMonitoringAccessControl)
+//nodeDsr.test()
+nodeDsr.openConnection()
+
+console.log('exit')
+
+// nodeDsr.closeConnection()
 
 // console.log('openConnection: ', nodeDsr.openConnection("192.168.137.100", 12345))
 // console.log('getLibraryVersion: ', nodeDsr.getLibraryVersion())

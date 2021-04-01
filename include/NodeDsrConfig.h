@@ -11,4 +11,7 @@
 #define DBGPRINT(fmt, args...)
 #endif
 
+// NodeDsr Number Limitation
+#define NODEDSR_NUMBER_LIMIT (10)
+
 #endif // __NODEDSRCONFIG_H_
