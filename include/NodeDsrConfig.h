@@ -1,5 +1,4 @@
-#ifndef __NODEDSRCONFIG_H_
-#define __NODEDSRCONFIG_H_
+#pragma once
 
 #include <stdio.h>
 
@@ -12,6 +11,4 @@
 #endif
 
 // NodeDsr Number Limitation
-#define NODEDSR_NUMBER_LIMIT (10)
-
-#endif // __NODEDSRCONFIG_H_
+#define NODEDSR_INSTANCE_LIMIT (10)
