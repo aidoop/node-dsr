@@ -138,8 +138,7 @@ LDFLAGS_Release := \
 	-m64
 
 LIBS := \
-	-lpthread \
-	/home/jinwon/Documents/github/node-dsr/lib/libDRFL.a \
+	/home/jinwon/Documents/github/node-dsr/lib/linux/libDRFL.a \
 	-lPocoFoundation \
 	-lPocoNet
 

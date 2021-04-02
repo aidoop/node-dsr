@@ -48,7 +48,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
 }
 
 NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_TpInitailizingComplted(false), m_bHasControlAuthority(false) {
+    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false) {
   Napi::Env env = info.Env();
 
   uint32_t nInfoLen = info.Length();
@@ -88,7 +88,7 @@ Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info) {
 
   Napi::Env env = info.Env();
 
-  DBGPRINT("info.Length: %u\n", info.Length());
+  DBGPRINT("info.Length: %u\n", static_cast<uint32_t>(info.Length()));
 
   bool bConnected = m_pDrfl->open_connection(m_strUrl, m_nPort);
   DBGPRINT("connection result: %d\n", bConnected);
@@ -146,14 +146,14 @@ Napi::Value NodeDsr::TestReturnArray(const Napi::CallbackInfo &info) {
 
   float fTestValues[6] = {111.111, 222.222, -333.333, 444.444, -555.555, 666.666};
   Napi::Array resultArray = Napi::Array::New(info.Env(), NUM_TASK);
-  for (uint32_t nIter; nIter < 6; nIter++) {
+  for (uint32_t nIter=0; nIter < 6; nIter++) {
     resultArray[nIter] = Napi::Number::New(env, fTestValues[nIter]);
   }
 
   return resultArray;
 }
 
-// Function Prototype
+// dsr api function protocol
 // const char* get_library_version()
 Napi::Value NodeDsr::GetLibraryVersion(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetLibraryVersion\n");
@@ -165,7 +165,7 @@ Napi::Value NodeDsr::GetLibraryVersion(const Napi::CallbackInfo &info) {
   return Napi::String::New(env, libVersion);
 }
 
-// Function Prototype
+// dsr api function protocol
 // bool get_system_version(LPSYSTEM_VERSION pVersion)
 Napi::Value NodeDsr::GetSystemVersion(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetSystemVersion\n");
@@ -220,7 +220,7 @@ Napi::Value NodeDsr::GetSystemVersion(const Napi::CallbackInfo &info) {
   return Napi::String::New(env, szReqVersion);
 }
 
-// Function Prototype
+// dsr api function protocol
 // void set_on_monitoring_state(TOnMonitoringStateCB pCallbackFunc)
 // typedef void (*TOnMonitoringStateCB)(const ROBOT_STATE);
 void NodeDsr::SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState) {
@@ -235,9 +235,7 @@ void NodeDsr::SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, u
 
 void NodeDsr::SetOnMonitoringState(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetOnMonitoringState\n");
-
-  DBGPRINT("param length: %d\n", info.Length());
-  DBGPRINT("Napi::Persistent(info[0].As<Napi::Function>()): %p\n", Napi::Persistent(info[0].As<Napi::Function>()));
+  DBGPRINT("param length: %d\n", static_cast<uint32_t>(info.Length()));
 
   Napi::Env env = info.Env();
 
@@ -255,21 +253,19 @@ void NodeDsr::SetOnMonitoringState(const Napi::CallbackInfo &info) {
   m_pDrfl->set_on_monitoring_state(g_pfnMonitoringStateCB[m_nIndex]);
 }
 
-// Function Prototype
+// dsr api function protocol
 // void set_on_monitoring_access_control(TOnMonitoringAccessControlCB pCallbackFunc)
 // typedef void (*TOnMonitoringAccessControlCB)(const MONITORING_ACCESS_CONTROL);
 void NodeDsr::SetOnMonitoringAccessControl(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetOnMonitoringAccessControl\n");
-
-  DBGPRINT("param length: %d\n", info.Length());
-  DBGPRINT("Napi::Persistent(info[0].As<Napi::Function>()): %p\n", Napi::Persistent(info[0].As<Napi::Function>()));
+  DBGPRINT("param length: %d\n", static_cast<uint32_t>(info.Length()));
 
   m_cbOnMonitoringAccessControl = Napi::Persistent(info[0].As<Napi::Function>());
 
   m_pDrfl->set_on_monitoring_access_control(g_pfnMonitoringAccessControlCB[m_nIndex]);
 }
 
-// Function Prototype
+// dsr api function protocol
 // bool movej(float fTargetPos[NUM_JOINT], float fTargetVel, float fTargetAcc, float fTargetTime = 0.f,
 // MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {
@@ -351,7 +347,7 @@ Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, bFuncRet);
 }
 
-// Function Prototype
+// dsr api function protocol
 // bool amovej(float fTargetPos[NUM_JOINT], float fTargetVel, float fTargetAcc, float fTargetTime = 0.f,
 //            MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
@@ -409,7 +405,7 @@ Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool movel(float fTargetPos[NUM_TASK], float fTargetVel[2], float fTargetAcc[2], float fTargetTime = 0.f,
 //            MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, MOVE_REFERENCE eMoveReference = MOVE_REFERENCE_BASE,
 //            float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
@@ -501,7 +497,7 @@ Napi::Value NodeDsr::MoveL(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool amovel(float fTargetPos[NUM_TASK], float fTargetVel[2], float fTargetAcc[2], float fTargetTime = 0.f,
 //      MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, MOVE_REFERENCE eMoveReference = MOVE_REFERENCE_BASE,
 //       BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
@@ -566,7 +562,7 @@ Napi::Value NodeDsr::MoveLA(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool stop(STOP_TYPE eStopType = STOP_TYPE_QUICK)
 Napi::Value NodeDsr::Stop(const Napi::CallbackInfo &info) {
   DBGPRINT("called Stop\n");
@@ -588,7 +584,7 @@ Napi::Value NodeDsr::Stop(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool move_pause()
 Napi::Value NodeDsr::MovePause(const Napi::CallbackInfo &info) {
   DBGPRINT("called MovePause\n");
@@ -600,7 +596,7 @@ Napi::Value NodeDsr::MovePause(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool move_pause()
 Napi::Value NodeDsr::MoveResume(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveResume\n");
@@ -612,7 +608,7 @@ Napi::Value NodeDsr::MoveResume(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool mwait()
 Napi::Value NodeDsr::MWait(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveResume\n");
@@ -624,7 +620,7 @@ Napi::Value NodeDsr::MWait(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_tool_digital_output(GPIO_TOOL_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::SetToolDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetToolDigitalOutput\n");
@@ -649,7 +645,7 @@ Napi::Value NodeDsr::SetToolDigitalOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_tool_digital_output(GPIO_TOOL_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::GetToolDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetToolDigitalOutput\n");
@@ -672,7 +668,7 @@ Napi::Value NodeDsr::GetToolDigitalOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool get_tool_digital_input(GPIO_TOOL_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetToolDigitalInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetToolDigitalInput\n");
@@ -695,7 +691,7 @@ Napi::Value NodeDsr::GetToolDigitalInput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::SetDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetDigitalOutput\n");
@@ -720,7 +716,7 @@ Napi::Value NodeDsr::SetDigitalOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool get_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetDigitalOutput\n");
@@ -743,7 +739,7 @@ Napi::Value NodeDsr::GetDigitalOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool get_digital_input(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetDigitalInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetDigitalInput\n");
@@ -766,7 +762,7 @@ Napi::Value NodeDsr::GetDigitalInput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_analog_output(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, float fValue)
 Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetAnalogOutput\n");
@@ -783,7 +779,7 @@ Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
   uint32_t nGpioIndex = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
   DBGPRINT("nGpioIndex: %d\n", nGpioIndex);
   float fValue = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fValue: %d\n", fValue);
+  DBGPRINT("fValue: %f\n", fValue);
 
   bool bFuncRet = m_pDrfl->set_analog_output(static_cast<GPIO_CTRLBOX_ANALOG_INDEX>(nGpioIndex), fValue);
   return Napi::Boolean::New(env, bFuncRet);
@@ -791,7 +787,7 @@ Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // float get_analog_input(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetAnalogOutput\n");
@@ -814,7 +810,7 @@ Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_mode_analog_input(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, GPIO_ANALOG_TYPE eAnalogType = GPIO_ANALOG_TYPE_CURRENT)
 Napi::Value NodeDsr::SetModeAnalogInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetModeAnalogInput\n");
@@ -840,7 +836,7 @@ Napi::Value NodeDsr::SetModeAnalogInput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool set_mode_analog_output(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, GPIO_ANALOG_TYPE eAnalogType = GPIO_ANALOG_TYPE_CURRENT)
 Napi::Value NodeDsr::GetModeAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetModeAnalogOutput\n");
@@ -866,7 +862,7 @@ Napi::Value NodeDsr::GetModeAnalogOutput(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool drl_start(ROBOT_SYSTEM eRobotSystem, string strDrlProgram)
 Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlStart\n");
@@ -883,7 +879,7 @@ Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
   uint32_t nRobotSystem = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
   DBGPRINT("nRobotSystem: %d\n", nRobotSystem);
   std::string strDrlProgram = info[nInfoIndex++].As<Napi::String>().Utf8Value();
-  DBGPRINT("nGpioAnalogType: %d\n", strDrlProgram);
+  DBGPRINT("strDrlProgram: %s\n", strDrlProgram.c_str());
 
   bool bFuncRet = m_pDrfl->drl_start(static_cast<ROBOT_SYSTEM>(nRobotSystem), strDrlProgram.c_str());
   return Napi::Boolean::New(env, bFuncRet);
@@ -891,7 +887,7 @@ Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool drl_stop(STOP_TYPE eStopType = STOP_TYPE_QUICK)
 Napi::Value NodeDsr::DrlStop(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlStop\n");
@@ -914,7 +910,7 @@ Napi::Value NodeDsr::DrlStop(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool drl_pause()
 Napi::Value NodeDsr::DrlPause(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlPause\n");
@@ -926,7 +922,7 @@ Napi::Value NodeDsr::DrlPause(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool drl_resume()
 Napi::Value NodeDsr::DrlResume(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlResume\n");
@@ -938,7 +934,7 @@ Napi::Value NodeDsr::DrlResume(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // bool change_operation_speed(float fSpeed)
 Napi::Value NodeDsr::ChangeOperationSpeed(const Napi::CallbackInfo &info) {
   DBGPRINT("called ChangeOperationSpeed\n");
@@ -952,7 +948,7 @@ Napi::Value NodeDsr::ChangeOperationSpeed(const Napi::CallbackInfo &info) {
   }
 
   float fSpeed = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fSpeed: %d\n", fSpeed);
+  DBGPRINT("fSpeed: %f\n", fSpeed);
 
   bool bFuncRet = m_pDrfl->change_operation_speed(fSpeed);
   return Napi::Boolean::New(env, bFuncRet);
@@ -960,7 +956,7 @@ Napi::Value NodeDsr::ChangeOperationSpeed(const Napi::CallbackInfo &info) {
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-// Function Prototype
+// dsr api function protocol
 // LPROBOT_POSE trans(float fSourcePos[NUM_TASK], float fOffset[NUM_TASK],
 //                    COORDINATE_SYSTEM eSourceRef = COORDINATE_SYSTEM_BASE, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE)
 Napi::Value NodeDsr::Trans(const Napi::CallbackInfo &info) {
@@ -1009,7 +1005,7 @@ Napi::Value NodeDsr::Trans(const Napi::CallbackInfo &info) {
   }
 
   Napi::Array resultArray = Napi::Array::New(info.Env(), NUM_TASK);
-  for (uint32_t nIter; nIter < NUM_TASK; nIter++) {
+  for (uint32_t nIter=0; nIter < NUM_TASK; nIter++) {
     resultArray[nIter] = Napi::Number::New(env, pstResultPose->_fPosition[nIter]);
   }
 

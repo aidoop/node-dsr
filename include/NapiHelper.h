@@ -12,9 +12,6 @@ class NapiHelper {
       return false;
     }
 
-    float fTargetPos[nInputArrayLen] = {
-        0.0,
-    };
     for (uint32_t nIter = 0; nIter < nInputArrayLen; nIter++) {
       fArray[nIter] = inputs.Get(nIter).As<Napi::Number>().FloatValue();
       DBGPRINT("Conveted [nIter]: %f\n", fArray[nIter]);

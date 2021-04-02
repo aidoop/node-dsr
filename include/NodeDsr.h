@@ -8,11 +8,11 @@ using namespace DRAFramework;
 #include "NodeDsrConfig.h"
 
 class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
- public:
+public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   NodeDsr(const Napi::CallbackInfo &info);
 
- private:
+private:
   Napi::Value TestCallback(const Napi::CallbackInfo &info);
   Napi::Value TestReturnArray(const Napi::CallbackInfo &info);
   Napi::Value OpenConnection(const Napi::CallbackInfo &info);
@@ -46,25 +46,25 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value ChangeOperationSpeed(const Napi::CallbackInfo &info);
   Napi::Value Trans(const Napi::CallbackInfo &info);
 
- public:
+public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);
 
- public:
+public:
   uint32_t GetIndex() { return m_nIndex; }
   CDRFLEx *GetCDRFLex() { return m_pDrfl; }
 
- public:
+public:
   Napi::FunctionReference m_cbOnMoitoringState;
   Napi::ThreadSafeFunction m_cbOnMoitoringStateTsfn;
   Napi::FunctionReference m_cbOnMonitoringAccessControl;
 
- public:
-  bool m_TpInitailizingComplted;
-  bool m_bHasControlAuthority;
-
- private:
+private:
   CDRFLEx *m_pDrfl;
-  uint32_t m_nIndex;
   string m_strUrl;
   uint32_t m_nPort;
+  int32_t m_nIndex;
+
+public:
+  bool m_TpInitailizingComplted;
+  bool m_bHasControlAuthority;  
 };
