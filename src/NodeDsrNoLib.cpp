@@ -180,6 +180,7 @@ void NodeDsr::SetOnMonitoringAccessControl(const Napi::CallbackInfo &info) {
 // MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveJ\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -188,6 +189,7 @@ Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {
 //            MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveJA\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -199,6 +201,7 @@ Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
 //            float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveL(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveL\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -210,6 +213,7 @@ Napi::Value NodeDsr::MoveL(const Napi::CallbackInfo &info) {
 //       BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveLA(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveLA\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -219,6 +223,7 @@ Napi::Value NodeDsr::MoveLA(const Napi::CallbackInfo &info) {
 // bool stop(STOP_TYPE eStopType = STOP_TYPE_QUICK)
 Napi::Value NodeDsr::Stop(const Napi::CallbackInfo &info) {
   DBGPRINT("called Stop\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -228,6 +233,7 @@ Napi::Value NodeDsr::Stop(const Napi::CallbackInfo &info) {
 // bool move_pause()
 Napi::Value NodeDsr::MovePause(const Napi::CallbackInfo &info) {
   DBGPRINT("called MovePause\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -246,6 +252,7 @@ Napi::Value NodeDsr::MoveResume(const Napi::CallbackInfo &info) {
 // bool mwait()
 Napi::Value NodeDsr::MWait(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveResume\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -255,6 +262,7 @@ Napi::Value NodeDsr::MWait(const Napi::CallbackInfo &info) {
 // bool set_tool_digital_output(GPIO_TOOL_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::SetToolDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetToolDigitalOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -264,6 +272,7 @@ Napi::Value NodeDsr::SetToolDigitalOutput(const Napi::CallbackInfo &info) {
 // bool set_tool_digital_output(GPIO_TOOL_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::GetToolDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetToolDigitalOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -273,6 +282,7 @@ Napi::Value NodeDsr::GetToolDigitalOutput(const Napi::CallbackInfo &info) {
 // bool get_tool_digital_input(GPIO_TOOL_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetToolDigitalInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetToolDigitalInput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -282,6 +292,7 @@ Napi::Value NodeDsr::GetToolDigitalInput(const Napi::CallbackInfo &info) {
 // bool set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex, bool bOnOff)
 Napi::Value NodeDsr::SetDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetDigitalOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -291,6 +302,7 @@ Napi::Value NodeDsr::SetDigitalOutput(const Napi::CallbackInfo &info) {
 // bool get_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetDigitalOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetDigitalOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -300,6 +312,7 @@ Napi::Value NodeDsr::GetDigitalOutput(const Napi::CallbackInfo &info) {
 // bool get_digital_input(GPIO_CTRLBOX_DIGITAL_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetDigitalInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetDigitalInput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -309,6 +322,7 @@ Napi::Value NodeDsr::GetDigitalInput(const Napi::CallbackInfo &info) {
 // bool set_analog_output(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, float fValue)
 Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetAnalogOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -318,6 +332,7 @@ Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
 // float get_analog_input(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex)
 Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetAnalogOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -327,6 +342,7 @@ Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
 // bool set_mode_analog_input(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, GPIO_ANALOG_TYPE eAnalogType = GPIO_ANALOG_TYPE_CURRENT)
 Napi::Value NodeDsr::SetModeAnalogInput(const Napi::CallbackInfo &info) {
   DBGPRINT("called SetModeAnalogInput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -336,6 +352,7 @@ Napi::Value NodeDsr::SetModeAnalogInput(const Napi::CallbackInfo &info) {
 // bool set_mode_analog_output(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex, GPIO_ANALOG_TYPE eAnalogType = GPIO_ANALOG_TYPE_CURRENT)
 Napi::Value NodeDsr::GetModeAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("called GetModeAnalogOutput\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -345,6 +362,7 @@ Napi::Value NodeDsr::GetModeAnalogOutput(const Napi::CallbackInfo &info) {
 // bool drl_start(ROBOT_SYSTEM eRobotSystem, string strDrlProgram)
 Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlStart\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -354,6 +372,7 @@ Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
 // bool drl_stop(STOP_TYPE eStopType = STOP_TYPE_QUICK)
 Napi::Value NodeDsr::DrlStop(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlStop\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -363,6 +382,7 @@ Napi::Value NodeDsr::DrlStop(const Napi::CallbackInfo &info) {
 // bool drl_pause()
 Napi::Value NodeDsr::DrlPause(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlPause\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -372,6 +392,7 @@ Napi::Value NodeDsr::DrlPause(const Napi::CallbackInfo &info) {
 // bool drl_resume()
 Napi::Value NodeDsr::DrlResume(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlResume\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -381,6 +402,7 @@ Napi::Value NodeDsr::DrlResume(const Napi::CallbackInfo &info) {
 // bool change_operation_speed(float fSpeed)
 Napi::Value NodeDsr::ChangeOperationSpeed(const Napi::CallbackInfo &info) {
   DBGPRINT("called ChangeOperationSpeed\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
 
@@ -391,5 +413,6 @@ Napi::Value NodeDsr::ChangeOperationSpeed(const Napi::CallbackInfo &info) {
 //                    COORDINATE_SYSTEM eSourceRef = COORDINATE_SYSTEM_BASE, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE)
 Napi::Value NodeDsr::Trans(const Napi::CallbackInfo &info) {
   DBGPRINT("called Trans\n");
+  Napi::Env env = info.Env();
   return Napi::Boolean::New(env, false);
 }
