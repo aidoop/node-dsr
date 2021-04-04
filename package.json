@@ -1,12 +1,12 @@
 {
-  "name": "node-dsr",
+  "name": "@things-factory/node-dsr",
   "version": "0.0.1",
   "description": "Doosan robot client module for nodejs",
   "main": "addon.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "node-gyp rebuild",
-    "run": "node index.js"
+    "clean": "rm -rf build",
+    "install": "npm run clean && node-gyp rebuild"
   },
   "repository": {
     "type": "git",
