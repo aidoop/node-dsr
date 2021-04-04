@@ -21,6 +21,7 @@ private:
   Napi::Value GetSystemVersion(const Napi::CallbackInfo &info);
   void SetOnMonitoringState(const Napi::CallbackInfo &info);
   void SetOnMonitoringAccessControl(const Napi::CallbackInfo &info);
+  void SetOnDisconnected(const Napi::CallbackInfo &info);
   Napi::Value MoveJ(const Napi::CallbackInfo &info);
   Napi::Value MoveJA(const Napi::CallbackInfo &info);
   Napi::Value MoveL(const Napi::CallbackInfo &info);
@@ -48,6 +49,7 @@ private:
 
 public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);
+  static void SetOnDisconnectedCB(Napi::Env env, Napi::Function jsCallback);
 
 public:
   uint32_t GetIndex() { return m_nIndex; }
@@ -57,6 +59,9 @@ public:
   Napi::FunctionReference m_cbOnMoitoringState;
   Napi::ThreadSafeFunction m_cbOnMoitoringStateTsfn;
   Napi::FunctionReference m_cbOnMonitoringAccessControl;
+  
+  Napi::FunctionReference m_cbOnDisconnected;
+  Napi::ThreadSafeFunction m_cbOnDisconnectedTsfn;
 
 private:
   CDRFLEx *m_pDrfl;

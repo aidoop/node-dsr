@@ -176,6 +176,17 @@ void NodeDsr::SetOnMonitoringAccessControl(const Napi::CallbackInfo &info) {
 }
 
 // dsr api function protocol
+// void void set_on_disconnected(TOnDisconnectedCB pCallbackFunc)
+// typedef void (*TOnDisconnectedCB)();
+void NodeDsr::SetOnDisconnected(const Napi::CallbackInfo &info) {
+  DBGPRINT("called SetOnDisconnected\n");
+}
+
+void NodeDsr::SetOnDisconnectedCB(Napi::Env env, Napi::Function jsCallback) {
+  DBGPRINT("called SetOnDisconnectedCB - start\n");
+}
+
+// dsr api function protocol
 // bool movej(float fTargetPos[NUM_JOINT], float fTargetVel, float fTargetAcc, float fTargetTime = 0.f,
 // MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
 Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {

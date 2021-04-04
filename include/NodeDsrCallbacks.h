@@ -160,3 +160,27 @@ DECLARE_MonitoringAccessControlCB(7);
 DECLARE_MonitoringAccessControlCB(8);
 DECLARE_MonitoringAccessControlCB(9);
 TOnMonitoringAccessControlCB g_pfnMonitoringAccessControlCB[NODEDSR_INSTANCE_LIMIT] = {OnMonitoringAccessControlCB0, OnMonitoringAccessControlCB1, OnMonitoringAccessControlCB2, OnMonitoringAccessControlCB3, OnMonitoringAccessControlCB4, OnMonitoringAccessControlCB5, OnMonitoringAccessControlCB6, OnMonitoringAccessControlCB7, OnMonitoringAccessControlCB8, OnMonitoringAccessControlCB9};
+
+
+///////////////////////////////////////////////////////////////////////////////
+// TOnDisconnectedCB callbacks
+#define DECLARE_Disconnected(__INDEX__)                                      \
+  void OnDisconnected##__INDEX__() {                                         \
+    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                          \
+    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                    \
+    DBGPRINT("OnDisconnectedCB, %d, %p\n", nIndex, pclNodeDsr);                                    \
+    if ((pclNodeDsr != NULL) || (pclNodeDsr->m_cbOnMoitoringState != NULL)) {                         \
+      pclNodeDsr->m_cbOnDisconnectedTsfn.BlockingCall(NodeDsr::SetOnDisconnectedCB); \
+    }    \
+  }
+DECLARE_Disconnected(0);
+DECLARE_Disconnected(1);
+DECLARE_Disconnected(2);
+DECLARE_Disconnected(3);
+DECLARE_Disconnected(4);
+DECLARE_Disconnected(5);
+DECLARE_Disconnected(6);
+DECLARE_Disconnected(7);
+DECLARE_Disconnected(8);
+DECLARE_Disconnected(9);
+TOnDisconnectedCB g_pfnDisconnected[NODEDSR_INSTANCE_LIMIT] = {OnDisconnected0, OnDisconnected1, OnDisconnected2, OnDisconnected3, OnDisconnected4, OnDisconnected5, OnDisconnected6, OnDisconnected7, OnDisconnected8, OnDisconnected9};

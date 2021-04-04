@@ -265,6 +265,40 @@ void NodeDsr::SetOnMonitoringAccessControl(const Napi::CallbackInfo &info) {
   m_pDrfl->set_on_monitoring_access_control(g_pfnMonitoringAccessControlCB[m_nIndex]);
 }
 
+
+// dsr api function protocol
+// void void set_on_disconnected(TOnDisconnectedCB pCallbackFunc)
+// typedef void (*TOnDisconnectedCB)();
+void NodeDsr::SetOnDisconnected(const Napi::CallbackInfo &info) {
+  DBGPRINT("called SetOnDisconnected\n");
+  DBGPRINT("param length: %d\n", static_cast<uint32_t>(info.Length()));
+
+  Napi::Env env = info.Env();
+
+  m_cbOnDisconnected = Napi::Persistent(info[0].As<Napi::Function>());
+
+  // Create a ThreadSafeFunction
+  m_cbOnDisconnectedTsfn = Napi::ThreadSafeFunction::New(
+      env,
+      info[0].As<Napi::Function>(),  // JavaScript function called asynchronously
+      "TOnDisconnectedCB",               // Name
+      0,                             // Unlimited queue
+      1                              // Only one thread will use this initially
+  );
+
+  m_pDrfl->set_on_disconnected(g_pfnDisconnected[m_nIndex]);
+}
+
+void NodeDsr::SetOnDisconnectedCB(Napi::Env env, Napi::Function jsCallback) {
+  DBGPRINT("called SetOnDisconnectedCB - start\n");
+  std::vector<napi_value> args = {};
+  jsCallback.Call(args);
+  DBGPRINT("called SetOnDisconnectedCB - end\n");
+}
+
+
+
+
 // dsr api function protocol
 // bool movej(float fTargetPos[NUM_JOINT], float fTargetVel, float fTargetAcc, float fTargetTime = 0.f,
 // MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
