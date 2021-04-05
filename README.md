@@ -4,6 +4,7 @@ Doosan robot client module for nodejs
 ## Limitations
 - Only supported on linux and windows.
 - Node version > 14.0
+- Max instance number < 10
 
 ## Prerequsites
 ### Linux
@@ -18,4 +19,7 @@ cmake ..
 cmake --build . --config Release
 sudo make install
 ```
+
+## API
+...
 
