@@ -101,17 +101,25 @@ Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info) {
 
   DBGPRINT("info.Length: %u\n", static_cast<uint32_t>(info.Length()));
 
-  bool bConnected = m_pDrfl->open_connection(m_strUrl, m_nPort);
-  DBGPRINT("connection result: %d\n", bConnected);
+  bool bConnected = false;
+  try {
+    bConnected = m_pDrfl->open_connection(m_strUrl, m_nPort);
+    DBGPRINT("connection result: %d\n", bConnected);
+    if (bConnected == false) {
+      throw std::runtime_error("Network connection failed\n");
+    }
 
-  // TODO: must check this gpio output
-  m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
-  while ((m_pDrfl->get_robot_state() != STATE_STANDBY) || !m_bHasControlAuthority) {
-    usleep(1000);
+    // TODO: must check this gpio output
+    m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
+    while ((m_pDrfl->get_robot_state() != STATE_STANDBY) || !m_bHasControlAuthority) {
+      usleep(1000);
+    }
+
+    m_pDrfl->set_robot_mode(ROBOT_MODE_MANUAL);
+    m_pDrfl->set_robot_system(ROBOT_SYSTEM_REAL);
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
   }
-
-  m_pDrfl->set_robot_mode(ROBOT_MODE_MANUAL);
-  m_pDrfl->set_robot_system(ROBOT_SYSTEM_REAL);
 
   return Napi::Boolean::New(env, bConnected);
 }
