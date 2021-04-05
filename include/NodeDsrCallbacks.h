@@ -109,10 +109,6 @@ DECLARE_MonitroingAccessControl(9);
 TOnMonitoringAccessControlCB g_pfnMonitroingAccessControl[NODEDSR_INSTANCE_LIMIT] = {OnMonitroingAccessControl0, OnMonitroingAccessControl1, OnMonitroingAccessControl2, OnMonitroingAccessControl3, OnMonitroingAccessControl4, OnMonitroingAccessControl5, OnMonitroingAccessControl6, OnMonitroingAccessControl7, OnMonitroingAccessControl8, OnMonitroingAccessControl9};
 
 ///////////////////////////////////////////////////////////////////////////////
-// NAPI ThreadSafe callbacks
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
 // TOnMonitoringStateCB callbacks
 #define DECLARE_MonitoringStateCB(__INDEX__)                                                          \
   void OnMonitoringStateCB##__INDEX__(const ROBOT_STATE eState) {                                     \
@@ -161,17 +157,16 @@ DECLARE_MonitoringAccessControlCB(8);
 DECLARE_MonitoringAccessControlCB(9);
 TOnMonitoringAccessControlCB g_pfnMonitoringAccessControlCB[NODEDSR_INSTANCE_LIMIT] = {OnMonitoringAccessControlCB0, OnMonitoringAccessControlCB1, OnMonitoringAccessControlCB2, OnMonitoringAccessControlCB3, OnMonitoringAccessControlCB4, OnMonitoringAccessControlCB5, OnMonitoringAccessControlCB6, OnMonitoringAccessControlCB7, OnMonitoringAccessControlCB8, OnMonitoringAccessControlCB9};
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // TOnDisconnectedCB callbacks
-#define DECLARE_Disconnected(__INDEX__)                                      \
-  void OnDisconnected##__INDEX__() {                                         \
-    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                          \
-    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                    \
-    DBGPRINT("OnDisconnectedCB, %d, %p\n", nIndex, pclNodeDsr);                                    \
-    if ((pclNodeDsr != NULL) || (pclNodeDsr->m_cbOnMoitoringState != NULL)) {                         \
+#define DECLARE_Disconnected(__INDEX__)                                              \
+  void OnDisconnected##__INDEX__() {                                                 \
+    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                       \
+    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                 \
+    DBGPRINT("OnDisconnectedCB, %d, %p\n", nIndex, pclNodeDsr);                      \
+    if ((pclNodeDsr != NULL) || (pclNodeDsr->m_cbOnMoitoringState != NULL)) {        \
       pclNodeDsr->m_cbOnDisconnectedTsfn.BlockingCall(NodeDsr::SetOnDisconnectedCB); \
-    }    \
+    }                                                                                \
   }
 DECLARE_Disconnected(0);
 DECLARE_Disconnected(1);

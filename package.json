@@ -1,8 +1,8 @@
 {
   "name": "@things-factory/node-dsr",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "description": "Doosan robot client module for nodejs",
-  "main": "addon.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf build",

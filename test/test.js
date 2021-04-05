@@ -4,6 +4,12 @@ const dsrlib = require("bindings")("node-dsr");
 
 var nodeDsr = new dsrlib.NodeDsr("192.168.137.50");
 
+// set callbacks
+// function disconnected_callback() {
+//   console.log("called disconnected_callback")
+// }
+// nodeDsr.setOnDisconnected(disconnected_callback)
+
 // openConnection
 console.log("openConnection: ", nodeDsr.openConnection());
 // getSystemVersion
@@ -28,7 +34,7 @@ var vel = 30.0;
 var acc = 40.0;
 console.log("movej: ", nodeDsr.movej(pos, vel, acc));
 // setDigitalOutput
-console.log("setDigitalOutput: ", nodeDsr.setDigitalOutput(1, true))
+console.log("setDigitalOutput: ", nodeDsr.setDigitalOutput(1, false))
 // getCurrentPos
 console.log("getCurrentPos: ", nodeDsr.getCurrentPos(true));
 // closeConnection

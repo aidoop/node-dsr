@@ -4,7 +4,7 @@
     },
     "targets": [
         {
-            "default_configuration": "Debug",
+            "default_configuration": "Release",
             "target_name": "node-dsr",
             "cflags!": ["-fno-exceptions"],
             "cflags": ["-std=c++11", "-Wall"],
