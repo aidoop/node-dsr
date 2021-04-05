@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/node-dsr",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Doosan robot client module for nodejs",
   "main": "addon.js",
   "scripts": {

@@ -12,9 +12,6 @@ console.log("sysversion(0): ", nodeDsr.getSystemVersion(0));
 console.log("sysversion(1): ", nodeDsr.getSystemVersion(1));
 // getSystemVersion
 console.log("sysversion(2): ", nodeDsr.getSystemVersion(1));
-// test to return array
-console.log("testReturnArray: ", nodeDsr.testReturnArray());
-
 // movel #1(Absolute)
 var pos = [389.48, -167.21, 438.1, 131.13, -177.21, 158.0];
 var vel = [30.0, 30.0];
@@ -30,7 +27,10 @@ var pos = [-0.8, -9.44, 135.92, -5.58, 52.59, 0.66];
 var vel = 30.0;
 var acc = 40.0;
 console.log("movej: ", nodeDsr.movej(pos, vel, acc));
-
+// setDigitalOutput
+console.log("setDigitalOutput: ", nodeDsr.setDigitalOutput(1, true))
+// getCurrentPos
+console.log("getCurrentPos: ", nodeDsr.getCurrentPos(true));
 // closeConnection
 console.log("closeConnection: ", nodeDsr.closeConnection());
 console.log("exit");

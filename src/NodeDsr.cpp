@@ -14,14 +14,18 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
       DefineClass(env,
                   "NodeDsr",
                   {
+#ifdef DRADEBUG
                       InstanceMethod("testCallback", &NodeDsr::TestCallback),
                       InstanceMethod("testReturnArray", &NodeDsr::TestReturnArray),
+#endif
                       InstanceMethod("openConnection", &NodeDsr::OpenConnection),
                       InstanceMethod("closeConnection", &NodeDsr::CloseConnection),
                       InstanceMethod("getLibraryVersion", &NodeDsr::GetLibraryVersion),
                       InstanceMethod("getSystemVersion", &NodeDsr::GetSystemVersion),
                       InstanceMethod("setOnMonitoringState", &NodeDsr::SetOnMonitoringState),
                       InstanceMethod("setOnMonitoringAccessControl", &NodeDsr::SetOnMonitoringAccessControl),
+                      InstanceMethod("setOnDisconnected", &NodeDsr::SetOnDisconnected),
+                      InstanceMethod("home", &NodeDsr::MoveHome),
                       InstanceMethod("movej", &NodeDsr::MoveJ),
                       InstanceMethod("amovej", &NodeDsr::MoveJA),
                       InstanceMethod("movel", &NodeDsr::MoveL),
@@ -31,12 +35,19 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("getToolDigitalInput", &NodeDsr::GetToolDigitalInput),
                       InstanceMethod("setDigitalOutput", &NodeDsr::SetDigitalOutput),
                       InstanceMethod("getDigitalOutput", &NodeDsr::GetDigitalOutput),
+                      InstanceMethod("getDigitalInput", &NodeDsr::GetDigitalInput),
                       InstanceMethod("setAnalogOutput", &NodeDsr::SetAnalogOutput),
                       InstanceMethod("getAnalogOutput", &NodeDsr::GetAnalogOutput),
                       InstanceMethod("setModeAnalogInput", &NodeDsr::SetModeAnalogInput),
                       InstanceMethod("getModeAnalogOutput", &NodeDsr::GetModeAnalogOutput),
-                      InstanceMethod("setToolDigitalOutput", &NodeDsr::SetToolDigitalOutput),
-                      InstanceMethod("getModeAnalogOutput", &NodeDsr::GetModeAnalogOutput),
+                      InstanceMethod("startDRL", &NodeDsr::DrlStart),
+                      InstanceMethod("stopDRL", &NodeDsr::DrlStop),
+                      InstanceMethod("pauseDRL", &NodeDsr::DrlPause),
+                      InstanceMethod("resumeDRL", &NodeDsr::DrlResume),
+                      InstanceMethod("changeOperationSpeed", &NodeDsr::ChangeOperationSpeed),
+                      InstanceMethod("trans", &NodeDsr::Trans),
+                      InstanceMethod("getCurrentPos", &NodeDsr::GetCurrentPos),
+                      InstanceMethod("setSingularityHandling", &NodeDsr::SetSingularityHandling),
                   });
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -117,6 +128,7 @@ Napi::Value NodeDsr::CloseConnection(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, true);
 }
 
+#ifdef DRADEBUG
 Napi::Value NodeDsr::TestCallback(const Napi::CallbackInfo &info) {
   DBGPRINT("called TestCallback\n");
 
@@ -146,12 +158,13 @@ Napi::Value NodeDsr::TestReturnArray(const Napi::CallbackInfo &info) {
 
   float fTestValues[6] = {111.111, 222.222, -333.333, 444.444, -555.555, 666.666};
   Napi::Array resultArray = Napi::Array::New(info.Env(), NUM_TASK);
-  for (uint32_t nIter=0; nIter < 6; nIter++) {
+  for (uint32_t nIter = 0; nIter < 6; nIter++) {
     resultArray[nIter] = Napi::Number::New(env, fTestValues[nIter]);
   }
 
   return resultArray;
 }
+#endif  // DRADEBUG
 
 // dsr api function protocol
 // const char* get_library_version()
@@ -265,7 +278,6 @@ void NodeDsr::SetOnMonitoringAccessControl(const Napi::CallbackInfo &info) {
   m_pDrfl->set_on_monitoring_access_control(g_pfnMonitoringAccessControlCB[m_nIndex]);
 }
 
-
 // dsr api function protocol
 // void void set_on_disconnected(TOnDisconnectedCB pCallbackFunc)
 // typedef void (*TOnDisconnectedCB)();
@@ -281,7 +293,7 @@ void NodeDsr::SetOnDisconnected(const Napi::CallbackInfo &info) {
   m_cbOnDisconnectedTsfn = Napi::ThreadSafeFunction::New(
       env,
       info[0].As<Napi::Function>(),  // JavaScript function called asynchronously
-      "TOnDisconnectedCB",               // Name
+      "TOnDisconnectedCB",           // Name
       0,                             // Unlimited queue
       1                              // Only one thread will use this initially
   );
@@ -296,9 +308,27 @@ void NodeDsr::SetOnDisconnectedCB(Napi::Env env, Napi::Function jsCallback) {
   DBGPRINT("called SetOnDisconnectedCB - end\n");
 }
 
+// dsr api function protocol
+// bool move_home(MOVE_HOME eMode = MOVE_HOME_MECHANIC, unsigned char bRun = (unsigned)1)
+Napi::Value NodeDsr::MoveHome(const Napi::CallbackInfo &info) {
+  DBGPRINT("called MoveHome\n");
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
 
+  if (nInfoLen < 2) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
 
+  bool bHomeUser = info[nInfoIndex++].As<Napi::Boolean>().Value();
+  bool bRun = info[nInfoIndex++].As<Napi::Boolean>().Value();
+  DBGPRINT("bHomeUser: %d\n", bHomeUser);
+  DBGPRINT("bRun: %d\n", bRun);
 
+  bool bFuncRet = m_pDrfl->move_home(static_cast<MOVE_HOME>(bHomeUser), static_cast<unsigned char>(bRun));
+  return Napi::Boolean::New(env, bFuncRet);
+}
 // dsr api function protocol
 // bool movej(float fTargetPos[NUM_JOINT], float fTargetVel, float fTargetAcc, float fTargetTime = 0.f,
 // MOVE_MODE eMoveMode = MOVE_MODE_ABSOLUTE, float fBlendingRadius = 0.f, BLENDING_SPEED_TYPE eBlendingType = BLENDING_SPEED_TYPE_DUPLICATE)
@@ -670,7 +700,7 @@ Napi::Value NodeDsr::SetToolDigitalOutput(const Napi::CallbackInfo &info) {
 
   uint32_t nGpioIndex = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
   DBGPRINT("nGpioIndex: %d\n", nGpioIndex);
-  bool bOnOff = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
+  bool bOnOff = info[nInfoIndex++].As<Napi::Boolean>().Value();
   DBGPRINT("bOnOff: %d\n", bOnOff);
 
   bool bFuncRet = m_pDrfl->set_tool_digital_output(static_cast<GPIO_TOOL_DIGITAL_INDEX>(nGpioIndex), bOnOff);
@@ -734,14 +764,14 @@ Napi::Value NodeDsr::SetDigitalOutput(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
   uint32_t nInfoLen = info.Length();
 
-  if (nInfoLen != 2) {
+  if (nInfoLen < 2) {
     Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
     return Napi::Boolean::New(env, false);
   }
 
   uint32_t nGpioIndex = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
   DBGPRINT("nGpioIndex: %d\n", nGpioIndex);
-  bool bOnOff = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
+  bool bOnOff = info[nInfoIndex++].As<Napi::Boolean>().Value();
   DBGPRINT("bOnOff: %d\n", bOnOff);
 
   bool bFuncRet = m_pDrfl->set_digital_output(static_cast<GPIO_CTRLBOX_DIGITAL_INDEX>(nGpioIndex), bOnOff);
@@ -926,7 +956,6 @@ Napi::Value NodeDsr::DrlStart(const Napi::CallbackInfo &info) {
 Napi::Value NodeDsr::DrlStop(const Napi::CallbackInfo &info) {
   DBGPRINT("called DrlStop\n");
   uint32_t nInfoIndex = 0;
-
   Napi::Env env = info.Env();
   uint32_t nInfoLen = info.Length();
 
@@ -1039,9 +1068,61 @@ Napi::Value NodeDsr::Trans(const Napi::CallbackInfo &info) {
   }
 
   Napi::Array resultArray = Napi::Array::New(info.Env(), NUM_TASK);
-  for (uint32_t nIter=0; nIter < NUM_TASK; nIter++) {
+  for (uint32_t nIter = 0; nIter < NUM_TASK; nIter++) {
     resultArray[nIter] = Napi::Number::New(env, pstResultPose->_fPosition[nIter]);
   }
 
   return resultArray;
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+// dsr api function protocol
+// LPROBOT_POSE get_current_pose(ROBOT_SPACE eSpaceType = ROBOT_SPACE_JOINT)
+Napi::Value NodeDsr::GetCurrentPos(const Napi::CallbackInfo &info) {
+  DBGPRINT("called GetCurrentPos\n");
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 1) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  ///////////////////////////////////////////////////////////////////
+  // input parameter: fSourcePos[NUM_TASK]
+  bool bTaskSpace = info[nInfoIndex++].As<Napi::Boolean>().Value();
+  ROBOT_POSE *pstResultPose = m_pDrfl->get_current_pose(static_cast<ROBOT_SPACE>(bTaskSpace));
+  if (pstResultPose == nullptr) {
+    return Napi::Boolean::New(env, false);
+  }
+
+  size_t arrayLength = (bTaskSpace == true) ? NUM_TASK : NUM_JOINT;
+  Napi::Array resultArray = Napi::Array::New(info.Env(), arrayLength);
+  for (uint32_t nIter = 0; nIter < NUM_TASK; nIter++) {
+    resultArray[nIter] = Napi::Number::New(env, pstResultPose->_fPosition[nIter]);
+  }
+
+  return resultArray;
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+// dsr api function protocol
+// bool set_singularity_handling(SINGULARITY_AVOIDANCE eMode)
+Napi::Value NodeDsr::SetSingularityHandling(const Napi::CallbackInfo &info) {
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 1) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  uint32_t nMode = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
+  DBGPRINT("nMode: %d\n", nMode);
+
+  bool bFuncRet = m_pDrfl->set_singularity_handling(static_cast<SINGULARITY_AVOIDANCE>(nMode));
+  return Napi::Boolean::New(env, bFuncRet);
 }
