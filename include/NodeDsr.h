@@ -40,7 +40,7 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value GetDigitalOutput(const Napi::CallbackInfo &info);
   Napi::Value GetDigitalInput(const Napi::CallbackInfo &info);
   Napi::Value SetAnalogOutput(const Napi::CallbackInfo &info);
-  Napi::Value GetAnalogOutput(const Napi::CallbackInfo &info);
+  Napi::Value GetAnalogInput(const Napi::CallbackInfo &info);
   Napi::Value SetModeAnalogInput(const Napi::CallbackInfo &info);
   Napi::Value GetModeAnalogOutput(const Napi::CallbackInfo &info);
   Napi::Value DrlStart(const Napi::CallbackInfo &info);
@@ -51,6 +51,7 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value Trans(const Napi::CallbackInfo &info);
   Napi::Value GetCurrentPos(const Napi::CallbackInfo &info);
   Napi::Value SetSingularityHandling(const Napi::CallbackInfo &info);
+  Napi::Value GetRobotState(const Napi::CallbackInfo &info);
 
  public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);

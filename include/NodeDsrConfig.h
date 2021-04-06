@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 // Debug messages
-#undef DRADEBUG
+#define DRADEBUG
 #ifdef DRADEBUG
 #define DBGPRINT(fmt, args...) printf(fmt, ##args)
 #else

@@ -37,7 +37,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("getDigitalOutput", &NodeDsr::GetDigitalOutput),
                       InstanceMethod("getDigitalInput", &NodeDsr::GetDigitalInput),
                       InstanceMethod("setAnalogOutput", &NodeDsr::SetAnalogOutput),
-                      InstanceMethod("getAnalogOutput", &NodeDsr::GetAnalogOutput),
+                      InstanceMethod("getAnalogInput", &NodeDsr::GetAnalogInput),
                       InstanceMethod("setModeAnalogInput", &NodeDsr::SetModeAnalogInput),
                       InstanceMethod("getModeAnalogOutput", &NodeDsr::GetModeAnalogOutput),
                       InstanceMethod("startDRL", &NodeDsr::DrlStart),
@@ -48,6 +48,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("trans", &NodeDsr::Trans),
                       InstanceMethod("getCurrentPos", &NodeDsr::GetCurrentPos),
                       InstanceMethod("setSingularityHandling", &NodeDsr::SetSingularityHandling),
+                      InstanceMethod("getRobotStatus", &NodeDsr::GetRobotState),
                   });
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -110,9 +111,16 @@ Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info) {
     }
 
     // TODO: must check this gpio output
-    m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
+    // m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
+    uint32_t nWaitCount = 0;
     while ((m_pDrfl->get_robot_state() != STATE_STANDBY) || !m_bHasControlAuthority) {
       usleep(1000);
+      // wait for 2 seconds
+      if (nWaitCount > 2000) {
+        throw std::runtime_error("Robot State Error\n");
+        break;
+      }
+      nWaitCount++;
     }
 
     m_pDrfl->set_robot_mode(ROBOT_MODE_MANUAL);
@@ -861,8 +869,8 @@ Napi::Value NodeDsr::SetAnalogOutput(const Napi::CallbackInfo &info) {
 ///////////////////////////////////////////////////////////////////
 // dsr api function protocol
 // float get_analog_input(GPIO_CTRLBOX_ANALOG_INDEX eGpioIndex)
-Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
-  DBGPRINT("called GetAnalogOutput\n");
+Napi::Value NodeDsr::GetAnalogInput(const Napi::CallbackInfo &info) {
+  DBGPRINT("called GetAnalogInput\n");
   uint32_t nInfoIndex = 0;
 
   Napi::Env env = info.Env();
@@ -877,6 +885,7 @@ Napi::Value NodeDsr::GetAnalogOutput(const Napi::CallbackInfo &info) {
   DBGPRINT("nGpioIndex: %d\n", nGpioIndex);
 
   float fFuncRet = m_pDrfl->get_analog_input(static_cast<GPIO_CTRLBOX_ANALOG_INDEX>(nGpioIndex));
+  DBGPRINT("fFuncRet: %f\n", fFuncRet);
   return Napi::Number::New(env, static_cast<double>(fFuncRet));
 }
 
@@ -1133,4 +1142,15 @@ Napi::Value NodeDsr::SetSingularityHandling(const Napi::CallbackInfo &info) {
 
   bool bFuncRet = m_pDrfl->set_singularity_handling(static_cast<SINGULARITY_AVOIDANCE>(nMode));
   return Napi::Boolean::New(env, bFuncRet);
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+// dsr api function protocol
+// ROBOT_STATE get_robot_state()
+Napi::Value NodeDsr::GetRobotState(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+
+  uint32_t nFuncRet = static_cast<uint32_t>(m_pDrfl->get_robot_state());
+  return Napi::Number::New(env, static_cast<double>(nFuncRet));
 }

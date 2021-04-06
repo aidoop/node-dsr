@@ -37,6 +37,14 @@ console.log("movej: ", nodeDsr.movej(pos, vel, acc));
 console.log("setDigitalOutput: ", nodeDsr.setDigitalOutput(1, false))
 // getCurrentPos
 console.log("getCurrentPos: ", nodeDsr.getCurrentPos(true));
+// getAnalogInput
+console.log("getAnalogInput: ", nodeDsr.getAnalogInput(0), nodeDsr.getAnalogInput(1));
+// getRobotStatus
+console.log("getRobotStatus: ", nodeDsr.getRobotStatus());
+// home 
+console.log("home: ", nodeDsr.home(true, true));
+// zero
+console.log("home: ", nodeDsr.home(false, true));
 // closeConnection
 console.log("closeConnection: ", nodeDsr.closeConnection());
 console.log("exit");
