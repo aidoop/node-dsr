@@ -60,7 +60,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
 }
 
 NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false) {
+    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false), m_nTaskSpeedLevel(0), m_nTaskSpeedVel(0), m_nTaskSpeedAcc(0), m_nJointSpeedLevel(0), m_nJointSpeedVel(0), m_nJointSpeedAcc(0) {
   Napi::Env env = info.Env();
 
   uint32_t nInfoLen = info.Length();
@@ -1153,4 +1153,25 @@ Napi::Value NodeDsr::GetRobotState(const Napi::CallbackInfo &info) {
 
   uint32_t nFuncRet = static_cast<uint32_t>(m_pDrfl->get_robot_state());
   return Napi::Number::New(env, static_cast<double>(nFuncRet));
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+// utility funcitons
+Napi::Value NodeDsr::SetTaskSpeedLevel(const Napi::CallbackInfo &info) {
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 1) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  uint32_t nLevel = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
+  DBGPRINT("nLevel: %d\n", nLevel);
+
+  m_nTaskSpeedLevel = nLevel;
+
+  return Napi::Boolean::New(env, true);
 }

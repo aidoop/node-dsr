@@ -52,6 +52,7 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value GetCurrentPos(const Napi::CallbackInfo &info);
   Napi::Value SetSingularityHandling(const Napi::CallbackInfo &info);
   Napi::Value GetRobotState(const Napi::CallbackInfo &info);
+  Napi::Value SetTaskSpeedLevel(const Napi::CallbackInfo &info);
 
  public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);
@@ -78,4 +79,13 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
  public:
   bool m_TpInitailizingComplted;
   bool m_bHasControlAuthority;
+
+  // speed levels
+ private:
+  uint32_t m_nTaskSpeedLevel;
+  uint32_t m_nTaskSpeedVel;
+  uint32_t m_nTaskSpeedAcc;
+  uint32_t m_nJointSpeedLevel;
+  uint32_t m_nJointSpeedVel;
+  uint32_t m_nJointSpeedAcc;
 };
