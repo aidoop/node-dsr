@@ -49,6 +49,11 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("getCurrentPos", &NodeDsr::GetCurrentPos),
                       InstanceMethod("setSingularityHandling", &NodeDsr::SetSingularityHandling),
                       InstanceMethod("getRobotStatus", &NodeDsr::GetRobotState),
+                      InstanceMethod("setTaskSpeedLevel", &NodeDsr::SetTaskSpeedLevel),
+                      InstanceMethod("setJointSpeedLevel", &NodeDsr::SetJointSpeedLevel),
+                      InstanceMethod("getTaskSpeedData", &NodeDsr::GetTaskSpeedData),
+                      InstanceMethod("getJointSpeedData", &NodeDsr::GetJointSpeedData),
+
                   });
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -60,7 +65,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
 }
 
 NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false), m_nTaskSpeedLevel(0), m_nTaskSpeedVel(0), m_nTaskSpeedAcc(0), m_nJointSpeedLevel(0), m_nJointSpeedVel(0), m_nJointSpeedAcc(0) {
+    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false), m_nTaskSpeedLevel(0), m_fTaskSpeedVel{30, 50, 100}, m_fTaskSpeedAcc{40, 60, 100}, m_nJointSpeedLevel(0), m_fJointSpeedVel{5, 10, 20}, m_fJointSpeedAcc{20, 30, 40} {
   Napi::Env env = info.Env();
 
   uint32_t nInfoLen = info.Length();
@@ -1171,7 +1176,48 @@ Napi::Value NodeDsr::SetTaskSpeedLevel(const Napi::CallbackInfo &info) {
   uint32_t nLevel = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
   DBGPRINT("nLevel: %d\n", nLevel);
 
+  if (nLevel > 2)
+    nLevel = 0;
+
   m_nTaskSpeedLevel = nLevel;
 
   return Napi::Boolean::New(env, true);
+}
+
+Napi::Value NodeDsr::SetJointSpeedLevel(const Napi::CallbackInfo &info) {
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 1) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  uint32_t nLevel = info[nInfoIndex++].As<Napi::Number>().Uint32Value();
+  DBGPRINT("nLevel: %d\n", nLevel);
+
+  m_nJointSpeedLevel = nLevel;
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Value NodeDsr::GetTaskSpeedData(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+
+  Napi::Array resultArray = Napi::Array::New(info.Env(), 2);
+  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, m_fTaskSpeedVel[m_nTaskSpeedLevel]);
+  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, m_fTaskSpeedAcc[m_nTaskSpeedLevel]);
+
+  return resultArray;
+}
+
+Napi::Value NodeDsr::GetJointSpeedData(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+
+  Napi::Array resultArray = Napi::Array::New(info.Env(), 2);
+  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, m_fJointSpeedVel[m_nJointSpeedLevel]);
+  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, m_fJointSpeedAcc[m_nJointSpeedLevel]);
+
+  return resultArray;
 }

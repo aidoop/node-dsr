@@ -45,6 +45,12 @@ console.log("getRobotStatus: ", nodeDsr.getRobotStatus());
 console.log("home: ", nodeDsr.home(true, true));
 // zero
 console.log("home: ", nodeDsr.home(false, true));
+// set task speed
+console.log("setTaskSpeedLevel, ", nodeDsr.setTaskSpeedLevel(1))
+console.log("getTaskSpeedData, ", nodeDsr.getTaskSpeedData())
+console.log("setJointSpeedLevel, ", nodeDsr.setJointSpeedLevel(2))
+console.log("getJointSpeedData, ", nodeDsr.getJointSpeedData())
+
 // closeConnection
 console.log("closeConnection: ", nodeDsr.closeConnection());
 console.log("exit");

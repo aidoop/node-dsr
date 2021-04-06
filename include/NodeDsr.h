@@ -7,6 +7,8 @@ using namespace DRAFramework;
 
 #include "NodeDsrConfig.h"
 
+#define NODEDSR_SPEED_LEVEL (3)
+
 class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
@@ -53,6 +55,9 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value SetSingularityHandling(const Napi::CallbackInfo &info);
   Napi::Value GetRobotState(const Napi::CallbackInfo &info);
   Napi::Value SetTaskSpeedLevel(const Napi::CallbackInfo &info);
+  Napi::Value SetJointSpeedLevel(const Napi::CallbackInfo &info);
+  Napi::Value GetTaskSpeedData(const Napi::CallbackInfo &info);
+  Napi::Value GetJointSpeedData(const Napi::CallbackInfo &info);
 
  public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);
@@ -83,9 +88,9 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   // speed levels
  private:
   uint32_t m_nTaskSpeedLevel;
-  uint32_t m_nTaskSpeedVel;
-  uint32_t m_nTaskSpeedAcc;
+  float m_fTaskSpeedVel[NODEDSR_SPEED_LEVEL];
+  float m_fTaskSpeedAcc[NODEDSR_SPEED_LEVEL];
   uint32_t m_nJointSpeedLevel;
-  uint32_t m_nJointSpeedVel;
-  uint32_t m_nJointSpeedAcc;
+  float m_fJointSpeedVel[NODEDSR_SPEED_LEVEL];
+  float m_fJointSpeedAcc[NODEDSR_SPEED_LEVEL];
 };
