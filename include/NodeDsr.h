@@ -58,6 +58,8 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   Napi::Value SetJointSpeedLevel(const Napi::CallbackInfo &info);
   Napi::Value GetTaskSpeedData(const Napi::CallbackInfo &info);
   Napi::Value GetJointSpeedData(const Napi::CallbackInfo &info);
+  Napi::Value SetTaskSpeedCustom(const Napi::CallbackInfo &info);
+  Napi::Value SetJointSpeedCustom(const Napi::CallbackInfo &info);
 
  public:
   static void SetOnMonitoringStateCB(Napi::Env env, Napi::Function jsCallback, uint32_t *peState);
@@ -93,4 +95,11 @@ class NodeDsr : public Napi::ObjectWrap<NodeDsr> {
   uint32_t m_nJointSpeedLevel;
   float m_fJointSpeedVel[NODEDSR_SPEED_LEVEL];
   float m_fJointSpeedAcc[NODEDSR_SPEED_LEVEL];
+
+  float m_fTaskSpeedVelCustom;
+  float m_fTaskSpeedAccCustom;
+  float m_fJointSpeedVelCustom;
+  float m_fJointSpeedAccCustom;
+  bool m_bTaskSpeedCustom;
+  bool m_bJointSpeedCustom;
 };

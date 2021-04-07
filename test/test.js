@@ -12,6 +12,8 @@ var nodeDsr = new dsrlib.NodeDsr("192.168.137.50");
 
 // openConnection
 console.log("openConnection: ", nodeDsr.openConnection());
+
+
 // getSystemVersion
 console.log("sysversion(0): ", nodeDsr.getSystemVersion(0));
 // getSystemVersion
@@ -44,10 +46,19 @@ console.log("getRobotStatus: ", nodeDsr.getRobotStatus());
 // home 
 console.log("home: ", nodeDsr.home(true, true));
 // zero
-console.log("home: ", nodeDsr.home(false, true));
+// console.log("home: ", nodeDsr.home(false, true));
+
 // set task speed
-console.log("setTaskSpeedLevel, ", nodeDsr.setTaskSpeedLevel(1))
+console.log("setTaskSpeedLevel, ", nodeDsr.setTaskSpeedLevel(0))
 console.log("getTaskSpeedData, ", nodeDsr.getTaskSpeedData())
+console.log("setTaskSpeedCustom, ", nodeDsr.setTaskSpeedCustom(50, 100))
+console.log("getTaskSpeedData, ", nodeDsr.getTaskSpeedData())
+console.log("setTaskSpeedLevel, ", nodeDsr.setTaskSpeedLevel(2))
+console.log("getTaskSpeedData, ", nodeDsr.getTaskSpeedData())
+console.log("setJointSpeedLevel, ", nodeDsr.setJointSpeedLevel(2))
+console.log("getJointSpeedData, ", nodeDsr.getJointSpeedData())
+console.log("setJointSpeedCustom, ", nodeDsr.setJointSpeedCustom(40, 55))
+console.log("getJointSpeedData, ", nodeDsr.getJointSpeedData())
 console.log("setJointSpeedLevel, ", nodeDsr.setJointSpeedLevel(2))
 console.log("getJointSpeedData, ", nodeDsr.getJointSpeedData())
 

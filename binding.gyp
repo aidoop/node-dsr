@@ -18,7 +18,7 @@
                 [
                     'OS=="linux"',
                     {
-                        "sources": ["src/addon.cpp", "src/NodeDsr.cpp"],
+                        "sources": ["src/addon.cpp", "src/NodeDsrNoLib.cpp"],
                         "libraries": [
                             "<(module_root_dir)/lib/linux/libDRFL.a",
                             "-lPocoFoundation",
