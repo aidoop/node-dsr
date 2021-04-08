@@ -10,7 +10,7 @@ Doosan robot client module for nodejs
 ### Linux
 #### Build and install POCO
 ```bash
-wget https://pocoproject.org/releases/poco-1.10.1/poco-1.10.1-all.tar.gz
+wget https://pocoproject.org/releases/poco-1.10.1/poco-1.10.1.tar.gz
 tar xvfz poco-1.10.1-all.tar.gz
 cd poco-1.10.1-all
 mkdir cmake-build
