@@ -13,7 +13,6 @@ var nodeDsr = new dsrlib.NodeDsr("192.168.137.50");
 // openConnection
 console.log("openConnection: ", nodeDsr.openConnection());
 
-
 // getSystemVersion
 console.log("sysversion(0): ", nodeDsr.getSystemVersion(0));
 // getSystemVersion

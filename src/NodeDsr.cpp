@@ -1248,9 +1248,9 @@ Napi::Value NodeDsr::SetTaskSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fTaskSpeedVelCustom = fVec;
   m_fTaskSpeedAccCustom = fAcc;
@@ -1271,9 +1271,9 @@ Napi::Value NodeDsr::SetJointSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fJointSpeedVelCustom = fVec;
   m_fJointSpeedAccCustom = fAcc;

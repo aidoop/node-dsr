@@ -81,23 +81,6 @@ NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
   }
   DBGPRINT("url: %s\n", m_strUrl.c_str());
   DBGPRINT("port: %d\n", m_nPort);
-
-  m_pDrfl = new CDRFLEx();
-  if (!m_pDrfl) {
-    Napi::TypeError::New(env, "failed to createCDRFLEx").ThrowAsJavaScriptException();
-  }
-
-  // set this pointer to NodeDsrArray
-  m_nIndex = NodeDsrArray::Set(this);
-  if (m_nIndex < 0) {
-    Napi::TypeError::New(env, "cannot assign new nodedsr by insufficient index capacity.").ThrowAsJavaScriptException();
-    return;
-  }
-  DBGPRINT("NodeDsr Index : %d\n", m_nIndex);
-
-  m_pDrfl->set_on_monitoring_state(g_pfnMonitoringState[m_nIndex]);
-  m_pDrfl->set_on_monitoring_access_control(g_pfnMonitroingAccessControl[m_nIndex]);
-  m_pDrfl->set_on_tp_initializing_completed(g_pfnTpInitializingCompleted[m_nIndex]);
 }
 
 Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info) {
@@ -105,21 +88,7 @@ Napi::Value NodeDsr::OpenConnection(const Napi::CallbackInfo &info) {
 
   Napi::Env env = info.Env();
 
-  DBGPRINT("info.Length: %u\n", static_cast<uint32_t>(info.Length()));
-
-  bool bConnected = m_pDrfl->open_connection(m_strUrl, m_nPort);
-  DBGPRINT("connection result: %d\n", bConnected);
-
-  // TODO: must check this gpio output
-  m_pDrfl->set_digital_output(GPIO_CTRLBOX_DIGITAL_INDEX_10, TRUE);
-  while ((m_pDrfl->get_robot_state() != STATE_STANDBY) || !m_bHasControlAuthority) {
-    usleep(1000);
-  }
-
-  m_pDrfl->set_robot_mode(ROBOT_MODE_MANUAL);
-  m_pDrfl->set_robot_system(ROBOT_SYSTEM_REAL);
-
-  return Napi::Boolean::New(env, bConnected);
+  return Napi::Boolean::New(env, false);
 }
 
 Napi::Value NodeDsr::CloseConnection(const Napi::CallbackInfo &info) {
@@ -127,11 +96,7 @@ Napi::Value NodeDsr::CloseConnection(const Napi::CallbackInfo &info) {
 
   Napi::Env env = info.Env();
 
-  m_pDrfl->close_connection();
-
-  // m_cbOnMoitoringStateTsfn.Release();
-
-  return Napi::Boolean::New(env, true);
+  return Napi::Boolean::New(env, false);
 }
 
 #ifdef DRADEBUG
@@ -556,9 +521,9 @@ Napi::Value NodeDsr::SetTaskSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fTaskSpeedVelCustom = fVec;
   m_fTaskSpeedAccCustom = fAcc;
@@ -579,9 +544,9 @@ Napi::Value NodeDsr::SetJointSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fJointSpeedVelCustom = fVec;
   m_fJointSpeedAccCustom = fAcc;
