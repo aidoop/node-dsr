@@ -53,7 +53,8 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("setJointSpeedLevel", &NodeDsr::SetJointSpeedLevel),
                       InstanceMethod("getTaskSpeedData", &NodeDsr::GetTaskSpeedData),
                       InstanceMethod("getJointSpeedData", &NodeDsr::GetJointSpeedData),
-
+                      InstanceMethod("setTaskSpeedCustom", &NodeDsr::SetTaskSpeedCustom),
+                      InstanceMethod("setJointSpeedCustom", &NodeDsr::SetJointSpeedCustom),
                   });
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -65,7 +66,7 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports) {
 }
 
 NodeDsr::NodeDsr(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false), m_nTaskSpeedLevel(0), m_fTaskSpeedVel{30, 50, 100}, m_fTaskSpeedAcc{40, 60, 100}, m_nJointSpeedLevel(0), m_fJointSpeedVel{5, 10, 20}, m_fJointSpeedAcc{20, 30, 40} {
+    : Napi::ObjectWrap<NodeDsr>(info), m_pDrfl(NULL), m_strUrl(""), m_nPort(12345), m_nIndex(0), m_TpInitailizingComplted(false), m_bHasControlAuthority(false), m_nTaskSpeedLevel(0), m_fTaskSpeedVel{60, 90, 120}, m_fTaskSpeedAcc{80, 100, 130}, m_nJointSpeedLevel(0), m_fJointSpeedVel{10, 20, 30}, m_fJointSpeedAcc{20, 30, 40}, m_fTaskSpeedVelCustom(-1.0f), m_fTaskSpeedAccCustom(-1.0f), m_fJointSpeedVelCustom(-1.0f), m_fJointSpeedAccCustom(-1.0f), m_bTaskSpeedCustom(false), m_bJointSpeedCustom(false) {
   Napi::Env env = info.Env();
 
   uint32_t nInfoLen = info.Length();
@@ -1181,6 +1182,10 @@ Napi::Value NodeDsr::SetTaskSpeedLevel(const Napi::CallbackInfo &info) {
 
   m_nTaskSpeedLevel = nLevel;
 
+  m_fTaskSpeedVelCustom = -1.0f;
+  m_fTaskSpeedAccCustom = -1.0f;
+  m_bTaskSpeedCustom = false;
+
   return Napi::Boolean::New(env, true);
 }
 
@@ -1199,15 +1204,22 @@ Napi::Value NodeDsr::SetJointSpeedLevel(const Napi::CallbackInfo &info) {
 
   m_nJointSpeedLevel = nLevel;
 
+  m_fJointSpeedVelCustom = -1.0f;
+  m_fJointSpeedAccCustom = -1.0f;
+  m_bJointSpeedCustom = false;
+
   return Napi::Boolean::New(env, true);
 }
 
 Napi::Value NodeDsr::GetTaskSpeedData(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
+  float fTaskVel = (m_bTaskSpeedCustom == true) ? m_fTaskSpeedVelCustom : m_fTaskSpeedVel[m_nTaskSpeedLevel];
+  float fTaskAcc = (m_bTaskSpeedCustom == true) ? m_fTaskSpeedAccCustom : m_fTaskSpeedAcc[m_nTaskSpeedLevel];
+
   Napi::Array resultArray = Napi::Array::New(info.Env(), 2);
-  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, m_fTaskSpeedVel[m_nTaskSpeedLevel]);
-  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, m_fTaskSpeedAcc[m_nTaskSpeedLevel]);
+  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, fTaskVel);
+  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, fTaskAcc);
 
   return resultArray;
 }
@@ -1215,9 +1227,58 @@ Napi::Value NodeDsr::GetTaskSpeedData(const Napi::CallbackInfo &info) {
 Napi::Value NodeDsr::GetJointSpeedData(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
+  float fJointVel = (m_bJointSpeedCustom == true) ? m_fJointSpeedVelCustom : m_fJointSpeedVel[m_nJointSpeedLevel];
+  float fJointAcc = (m_bJointSpeedCustom == true) ? m_fJointSpeedAccCustom : m_fJointSpeedAcc[m_nJointSpeedLevel];
+
   Napi::Array resultArray = Napi::Array::New(info.Env(), 2);
-  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, m_fJointSpeedVel[m_nJointSpeedLevel]);
-  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, m_fJointSpeedAcc[m_nJointSpeedLevel]);
+  resultArray[static_cast<uint32_t>(0)] = Napi::Number::New(env, fJointVel);
+  resultArray[static_cast<uint32_t>(1)] = Napi::Number::New(env, fJointAcc);
 
   return resultArray;
+}
+
+Napi::Value NodeDsr::SetTaskSpeedCustom(const Napi::CallbackInfo &info) {
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 2) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+  DBGPRINT("fVec: %d\n", fVec);
+  float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+  DBGPRINT("fAcc: %d\n", fAcc);
+
+  m_fTaskSpeedVelCustom = fVec;
+  m_fTaskSpeedAccCustom = fAcc;
+
+  m_bTaskSpeedCustom = true;
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Value NodeDsr::SetJointSpeedCustom(const Napi::CallbackInfo &info) {
+  uint32_t nInfoIndex = 0;
+  Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 2) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+  DBGPRINT("fVec: %d\n", fVec);
+  float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+  DBGPRINT("fAcc: %d\n", fAcc);
+
+  m_fJointSpeedVelCustom = fVec;
+  m_fJointSpeedAccCustom = fAcc;
+
+  m_bJointSpeedCustom = true;
+
+  return Napi::Boolean::New(env, true);
 }

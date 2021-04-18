@@ -6,12 +6,12 @@
 
 ////////////////////////////////////////////////////////
 // Default Callback functions
-#define DECLARE_TpInitializingCompleted(__INDEX__)                                      \
-  void OnTpInitializingCompleted##__INDEX__() {                                         \
-    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                          \
-    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                    \
-    pclNodeDsr->m_TpInitailizingComplted = TRUE;                                        \
-    pclNodeDsr->GetCDRFLex()->ManageAccessControl(MANAGE_ACCESS_CONTROL_FORCE_REQUEST); \
+#define DECLARE_TpInitializingCompleted(__INDEX__)                                        \
+  void OnTpInitializingCompleted##__INDEX__() {                                           \
+    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                            \
+    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                      \
+    pclNodeDsr->m_TpInitailizingComplted = TRUE;                                          \
+    pclNodeDsr->GetCDRFLex()->manage_access_control(MANAGE_ACCESS_CONTROL_FORCE_REQUEST); \
   }
 DECLARE_TpInitializingCompleted(0);
 DECLARE_TpInitializingCompleted(1);
@@ -25,41 +25,41 @@ DECLARE_TpInitializingCompleted(8);
 DECLARE_TpInitializingCompleted(9);
 TOnTpInitializingCompletedCB g_pfnTpInitializingCompleted[NODEDSR_INSTANCE_LIMIT] = {OnTpInitializingCompleted0, OnTpInitializingCompleted1, OnTpInitializingCompleted2, OnTpInitializingCompleted3, OnTpInitializingCompleted4, OnTpInitializingCompleted5, OnTpInitializingCompleted6, OnTpInitializingCompleted7, OnTpInitializingCompleted8, OnTpInitializingCompleted9};
 
-#define DECLARE_MonitoringState(__INDEX__)                                              \
-  void OnMonitoringState##__INDEX__(const ROBOT_STATE eState) {                         \
-    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                          \
-    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                    \
-    switch ((unsigned char)eState) {                                                    \
-      case STATE_EMERGENCY_STOP:                                                        \
-        break;                                                                          \
-      case STATE_STANDBY:                                                               \
-      case STATE_MOVING:                                                                \
-      case STATE_TEACHING:                                                              \
-        break;                                                                          \
-      case STATE_SAFE_STOP:                                                             \
-        if (pclNodeDsr->m_bHasControlAuthority) {                                       \
-          pclNodeDsr->GetCDRFLex()->SetSafeStopResetType(SAFE_STOP_RESET_TYPE_DEFAULT); \
-          pclNodeDsr->GetCDRFLex()->SetRobotControl(CONTROL_RESET_SAFET_STOP);          \
-        }                                                                               \
-        break;                                                                          \
-      case STATE_SAFE_OFF:                                                              \
-        if (pclNodeDsr->m_bHasControlAuthority)                                         \
-          assert(pclNodeDsr->GetCDRFLex()->SetRobotControl(CONTROL_SERVO_ON));          \
-        break;                                                                          \
-      case STATE_SAFE_STOP2:                                                            \
-        if (pclNodeDsr->m_bHasControlAuthority)                                         \
-          pclNodeDsr->GetCDRFLex()->SetRobotControl(CONTROL_RECOVERY_SAFE_STOP);        \
-        break;                                                                          \
-      case STATE_SAFE_OFF2:                                                             \
-        if (pclNodeDsr->m_bHasControlAuthority) {                                       \
-          pclNodeDsr->GetCDRFLex()->SetRobotControl(CONTROL_RECOVERY_SAFE_OFF);         \
-        }                                                                               \
-        break;                                                                          \
-      case STATE_RECOVERY:                                                              \
-        break;                                                                          \
-      default:                                                                          \
-        break;                                                                          \
-    }                                                                                   \
+#define DECLARE_MonitoringState(__INDEX__)                                                  \
+  void OnMonitoringState##__INDEX__(const ROBOT_STATE eState) {                             \
+    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                              \
+    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                        \
+    switch ((unsigned char)eState) {                                                        \
+      case STATE_EMERGENCY_STOP:                                                            \
+        break;                                                                              \
+      case STATE_STANDBY:                                                                   \
+      case STATE_MOVING:                                                                    \
+      case STATE_TEACHING:                                                                  \
+        break;                                                                              \
+      case STATE_SAFE_STOP:                                                                 \
+        if (pclNodeDsr->m_bHasControlAuthority) {                                           \
+          pclNodeDsr->GetCDRFLex()->set_safe_stop_reset_type(SAFE_STOP_RESET_TYPE_DEFAULT); \
+          pclNodeDsr->GetCDRFLex()->set_robot_control(CONTROL_RESET_SAFET_STOP);            \
+        }                                                                                   \
+        break;                                                                              \
+      case STATE_SAFE_OFF:                                                                  \
+        if (pclNodeDsr->m_bHasControlAuthority)                                             \
+          assert(pclNodeDsr->GetCDRFLex()->set_robot_control(CONTROL_SERVO_ON));            \
+        break;                                                                              \
+      case STATE_SAFE_STOP2:                                                                \
+        if (pclNodeDsr->m_bHasControlAuthority)                                             \
+          pclNodeDsr->GetCDRFLex()->set_robot_control(CONTROL_RECOVERY_SAFE_STOP);          \
+        break;                                                                              \
+      case STATE_SAFE_OFF2:                                                                 \
+        if (pclNodeDsr->m_bHasControlAuthority) {                                           \
+          pclNodeDsr->GetCDRFLex()->set_robot_control(CONTROL_RECOVERY_SAFE_OFF);           \
+        }                                                                                   \
+        break;                                                                              \
+      case STATE_RECOVERY:                                                                  \
+        break;                                                                              \
+      default:                                                                              \
+        break;                                                                              \
+    }                                                                                       \
   }
 DECLARE_MonitoringState(0);
 DECLARE_MonitoringState(1);
@@ -73,28 +73,28 @@ DECLARE_MonitoringState(8);
 DECLARE_MonitoringState(9);
 TOnMonitoringStateCB g_pfnMonitoringState[NODEDSR_INSTANCE_LIMIT] = {OnMonitoringState0, OnMonitoringState1, OnMonitoringState2, OnMonitoringState3, OnMonitoringState4, OnMonitoringState5, OnMonitoringState6, OnMonitoringState7, OnMonitoringState8, OnMonitoringState9};
 
-#define DECLARE_MonitroingAccessControl(__INDEX__)                                                \
-  void OnMonitroingAccessControl##__INDEX__(const MONITORING_ACCESS_CONTROL eTrasnsitControl) {   \
-    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                                    \
-    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                              \
-    switch (eTrasnsitControl) {                                                                   \
-      case MONITORING_ACCESS_CONTROL_REQUEST:                                                     \
-        assert(pclNodeDsr->GetCDRFLex()->ManageAccessControl(MANAGE_ACCESS_CONTROL_RESPONSE_NO)); \
-        break;                                                                                    \
-      case MONITORING_ACCESS_CONTROL_GRANT:                                                       \
-        pclNodeDsr->m_bHasControlAuthority = TRUE;                                                \
-        OnMonitoringState##__INDEX__(pclNodeDsr->GetCDRFLex()->GetRobotState());                  \
-        break;                                                                                    \
-      case MONITORING_ACCESS_CONTROL_DENY:                                                        \
-      case MONITORING_ACCESS_CONTROL_LOSS:                                                        \
-        pclNodeDsr->m_bHasControlAuthority = FALSE;                                               \
-        if (pclNodeDsr->m_TpInitailizingComplted) {                                               \
-          assert(pclNodeDsr->GetCDRFLex()->ManageAccessControl(MANAGE_ACCESS_CONTROL_REQUEST));   \
-        }                                                                                         \
-        break;                                                                                    \
-      default:                                                                                    \
-        break;                                                                                    \
-    }                                                                                             \
+#define DECLARE_MonitroingAccessControl(__INDEX__)                                                  \
+  void OnMonitroingAccessControl##__INDEX__(const MONITORING_ACCESS_CONTROL eTrasnsitControl) {     \
+    uint32_t nIndex = static_cast<uint32_t>(atoi(#__INDEX__));                                      \
+    NodeDsr *pclNodeDsr = NodeDsrArray::Get(nIndex);                                                \
+    switch (eTrasnsitControl) {                                                                     \
+      case MONITORING_ACCESS_CONTROL_REQUEST:                                                       \
+        assert(pclNodeDsr->GetCDRFLex()->manage_access_control(MANAGE_ACCESS_CONTROL_RESPONSE_NO)); \
+        break;                                                                                      \
+      case MONITORING_ACCESS_CONTROL_GRANT:                                                         \
+        pclNodeDsr->m_bHasControlAuthority = TRUE;                                                  \
+        OnMonitoringState##__INDEX__(pclNodeDsr->GetCDRFLex()->GetRobotState());                    \
+        break;                                                                                      \
+      case MONITORING_ACCESS_CONTROL_DENY:                                                          \
+      case MONITORING_ACCESS_CONTROL_LOSS:                                                          \
+        pclNodeDsr->m_bHasControlAuthority = FALSE;                                                 \
+        if (pclNodeDsr->m_TpInitailizingComplted) {                                                 \
+          assert(pclNodeDsr->GetCDRFLex()->manage_access_control(MANAGE_ACCESS_CONTROL_REQUEST));   \
+        }                                                                                           \
+        break;                                                                                      \
+      default:                                                                                      \
+        break;                                                                                      \
+    }                                                                                               \
   }
 DECLARE_MonitroingAccessControl(0);
 DECLARE_MonitroingAccessControl(1);
