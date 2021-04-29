@@ -4,12 +4,6 @@ const dsrlib = require("bindings")("node-dsr");
 
 var nodeDsr = new dsrlib.NodeDsr("192.168.137.50");
 
-// set callbacks
-// function disconnected_callback() {
-//   console.log("called disconnected_callback")
-// }
-// nodeDsr.setOnDisconnected(disconnected_callback)
-
 // openConnection
 console.log("openConnection: ", nodeDsr.openConnection());
 
@@ -44,8 +38,6 @@ console.log("getAnalogInput: ", nodeDsr.getAnalogInput(0), nodeDsr.getAnalogInpu
 console.log("getRobotStatus: ", nodeDsr.getRobotStatus());
 // home 
 console.log("home: ", nodeDsr.home(true, true));
-// zero
-// console.log("home: ", nodeDsr.home(false, true));
 
 // set task speed
 console.log("setTaskSpeedLevel, ", nodeDsr.setTaskSpeedLevel(0))
