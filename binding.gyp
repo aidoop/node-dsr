@@ -29,12 +29,7 @@
                 [
                     'OS=="win"',
                     {
-                        "sources": ["src/addon.cpp", "src/NodeDsr.cpp"],
-                        "libraries": [
-                            "<(module_root_dir)/lib/win/DRFLWin64.lib",
-                            "<(module_root_dir)/lib/win/PocoFoundation.lib",
-                            "<(module_root_dir)/lib/win/PocoNet.lib",
-                        ],
+                        "sources": ["src/addon.cpp", "src/NodeDsrNoLibWin.cpp"],
                     },
                 ],
                 [
