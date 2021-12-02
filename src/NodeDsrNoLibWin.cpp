@@ -1,12 +1,9 @@
 #include <assert.h>
-#include <unistd.h>
-
 #include <iostream>
 
 #include "NapiHelper.h"
 #include "NodeDsr.h"
 #include "NodeDsrArray.h"
-#include "NodeDsrCallbacks.h"
 
 Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports)
 {
@@ -59,8 +56,9 @@ Napi::Object NodeDsr::Init(Napi::Env env, Napi::Object exports)
 
   Napi::FunctionReference *constructor = new Napi::FunctionReference();
   *constructor = Napi::Persistent(func);
+#ifndef _WIN32
   env.SetInstanceData(constructor);
-
+#endif
   exports.Set("NodeDsr", func);
   return exports;
 }

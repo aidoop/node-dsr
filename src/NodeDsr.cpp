@@ -145,8 +145,6 @@ Napi::Value NodeDsr::CloseConnection(const Napi::CallbackInfo &info) {
 
   m_pDrfl->close_connection();
 
-  // m_cbOnMoitoringStateTsfn.Release();
-
   return Napi::Boolean::New(env, true);
 }
 
@@ -439,11 +437,19 @@ Napi::Value NodeDsr::MoveJ(const Napi::CallbackInfo &info) {
 Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveJA\n");
 
+  uint32_t nInfoIndex = 0;
   Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 3) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTartPos[NUM_JOINT]
-  Napi::Array inputs = info[0].As<Napi::Array>();
+  // Ref: https://github.com/nodejs/node-addon-examples/blob/4c3b7816662e3a4ab26d41f007bbd1784205bda6/array_buffer_to_native/node-addon-api/array_buffer_to_native.cc
+  Napi::Array inputs = info[nInfoIndex++].As<Napi::Array>();
   uint32_t nInputArrayLen = inputs.Length();
   printf("nInputArrayLen: %d\n", nInputArrayLen);
   if (nInputArrayLen != NUM_JOINT) {
@@ -460,28 +466,38 @@ Napi::Value NodeDsr::MoveJA(const Napi::CallbackInfo &info) {
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTargetVel
-  float fTargetVel = info[1].As<Napi::Number>().FloatValue();
+  float fTargetVel = info[nInfoIndex++].As<Napi::Number>().FloatValue();
   DBGPRINT("fTargetVel: %f\n", fTargetVel);
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTargetAcc
-  float fTargetAcc = info[2].As<Napi::Number>().FloatValue();
+  float fTargetAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
   DBGPRINT("fTargetAcc: %f\n", fTargetAcc);
+
+  float fTargetTime = 0.0f;
+  bool bRelativeMove = false;
+  bool bBlendOverride = false;
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTargetTime
-  float fTargetTime = info[3].As<Napi::Number>().FloatValue();
-  DBGPRINT("fTargetTime: %f\n", fTargetTime);
+  if (nInfoLen > nInfoIndex) {
+    fTargetTime = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+    DBGPRINT("fTargetTime: %f\n", fTargetTime);
+  }
 
   ///////////////////////////////////////////////////////////////////
-  // input parameter: bRelativeMove
-  bool bRelativeMove = info[4].As<Napi::Boolean>().Value();
-  DBGPRINT("bRelativeMove: %d\n", bRelativeMove);
+  // input parameter: bRelativeMoveparam
+  if (nInfoLen > nInfoIndex) {
+    bRelativeMove = info[nInfoIndex++].As<Napi::Boolean>().Value();
+    DBGPRINT("bRelativeMove: %d\n", bRelativeMove);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: bBlendOverride
-  bool bBlendOverride = info[5].As<Napi::Boolean>().Value();
-  DBGPRINT("bBlendOverride: %d\n", bBlendOverride);
+  if (nInfoLen > nInfoIndex) {
+    bBlendOverride = info[nInfoIndex++].As<Napi::Boolean>().Value();
+    DBGPRINT("bBlendOverride: %d\n", bBlendOverride);
+  }
 
   bool bFuncRet = m_pDrfl->amovej(fTargetPos, fTargetVel, fTargetAcc, fTargetTime,
                                   static_cast<MOVE_MODE>(bRelativeMove), static_cast<BLENDING_SPEED_TYPE>(bBlendOverride));
@@ -591,6 +607,12 @@ Napi::Value NodeDsr::MoveLA(const Napi::CallbackInfo &info) {
   DBGPRINT("called MoveLA\n");
   uint32_t nInfoIndex = 0;
   Napi::Env env = info.Env();
+  uint32_t nInfoLen = info.Length();
+
+  if (nInfoLen < 3) {
+    Napi::TypeError::New(env, "invalid function parameter").ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTartPos[NUM_TASK]
@@ -620,28 +642,43 @@ Napi::Value NodeDsr::MoveLA(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, false);
   }
 
+  float fTargetTime = 0.0f;
+  bool bRelativeMove = false;
+  MOVE_REFERENCE eMoveReference = MOVE_REFERENCE_BASE;
+  bool bBlendOverride = false;
+
   ///////////////////////////////////////////////////////////////////
   // input parameter: fTargetTime
-  float fTargetTime = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fTargetTime: %f\n", fTargetTime);
+  if (nInfoLen > nInfoIndex) {
+    fTargetTime = info[nInfoIndex++].As<Napi::Number>().FloatValue();
+    DBGPRINT("fTargetTime: %f\n", fTargetTime);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: bRelativeMove
-  bool bRelativeMove = info[nInfoIndex++].As<Napi::Boolean>().Value();
-  DBGPRINT("bRelativeMove: %d\n", bRelativeMove);
+  if (nInfoLen > nInfoIndex) {
+    bRelativeMove = info[nInfoIndex++].As<Napi::Boolean>().Value();
+    DBGPRINT("bRelativeMove: %d\n", bRelativeMove);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: eMoveReference
-  MOVE_REFERENCE eMoveReference = static_cast<MOVE_REFERENCE>(info[nInfoIndex++].As<Napi::Number>().Uint32Value());
-  DBGPRINT("eMoveReference: %d\n", eMoveReference);
+  if (nInfoLen > nInfoIndex) {
+    eMoveReference = static_cast<MOVE_REFERENCE>(info[nInfoIndex++].As<Napi::Number>().Uint32Value());
+    DBGPRINT("eMoveReference: %d\n", eMoveReference);
+  }
 
   ///////////////////////////////////////////////////////////////////
   // input parameter: bBlendOverride
-  bool bBlendOverride = info[nInfoIndex++].As<Napi::Boolean>().Value();
-  DBGPRINT("bBlendOverride: %d\n", bBlendOverride);
+  if (nInfoLen > nInfoIndex) {
+    bBlendOverride = info[nInfoIndex++].As<Napi::Boolean>().Value();
+    DBGPRINT("bBlendOverride: %d\n", bBlendOverride);
+  }
 
   bool bFuncRet = m_pDrfl->amovel(fTargetPos, fTargetVel, fTargetAcc, fTargetTime, static_cast<MOVE_MODE>(bRelativeMove),
                                   eMoveReference, static_cast<BLENDING_SPEED_TYPE>(bBlendOverride));
+
+  DBGPRINT("bFuncRet: %d\n", bFuncRet);
 
   return Napi::Boolean::New(env, bFuncRet);
 }
@@ -1248,9 +1285,9 @@ Napi::Value NodeDsr::SetTaskSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fTaskSpeedVelCustom = fVec;
   m_fTaskSpeedAccCustom = fAcc;
@@ -1271,9 +1308,9 @@ Napi::Value NodeDsr::SetJointSpeedCustom(const Napi::CallbackInfo &info) {
   }
 
   float fVec = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fVec: %d\n", fVec);
+  DBGPRINT("fVec: %f\n", fVec);
   float fAcc = info[nInfoIndex++].As<Napi::Number>().FloatValue();
-  DBGPRINT("fAcc: %d\n", fAcc);
+  DBGPRINT("fAcc: %f\n", fAcc);
 
   m_fJointSpeedVelCustom = fVec;
   m_fJointSpeedAccCustom = fAcc;

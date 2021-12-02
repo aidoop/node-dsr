@@ -12,7 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/aidoop/node-dsr.git"
   },
-  "keywords": [],
+  "keywords": [
+    "doosan",
+    "robot arm"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {

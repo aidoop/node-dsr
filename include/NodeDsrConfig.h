@@ -7,7 +7,11 @@
 #ifdef DRADEBUG
 #define DBGPRINT(fmt, args...) printf(fmt, ##args)
 #else
+#ifdef _WIN32
+#define DBGPRINT(fmt, args, ...)
+#else
 #define DBGPRINT(fmt, args...)
+#endif
 #endif
 
 // NodeDsr Number Limitation
